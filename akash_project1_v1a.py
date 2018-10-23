@@ -53,6 +53,7 @@ print('test:',lineno())
 count = 1
 
 # Iterate through each news company
+f = open('summary_articles.txt', 'w')
 for company, value in companies.items():
     # If a RSS link is provided in the JSON file, this will be the first choice.
     # Reason for this is that, RSS feeds often give more consistent and correct data.
@@ -89,6 +90,7 @@ for company, value in companies.items():
                 article['text'] = content.text
                 newsPaper['articles'].append(article)
                 print(count, "articles downloaded from", company, ", url: ", entry.link)
+                print(count, "articles downloaded from", company, ", url: ", entry.link,file =f)
                 count = count + 1
     else:
         # This is the fallback method if a RSS-feed link is not provided.
@@ -128,11 +130,12 @@ for company, value in companies.items():
             article['published'] = content.publish_date.isoformat()
             newsPaper['articles'].append(article)
             print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
+            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
             count = count + 1
             noneTypeCount = 0
     count = 1
     data['newspapers'][company] = newsPaper
-
+   
 # Finally it saves the articles as a JSON-file.
 try:
     with open('scraped_articles.json', 'w') as outfile:
