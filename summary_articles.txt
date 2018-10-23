@@ -7,23 +7,23 @@
 3 articles downloaded from washingtonpost_politics  using newspaper, url:  https://www.washingtonpost.com/nation/2018/10/22/utah-refused-prosecute-their-sexual-assault-cases-so-four-women-set-out-do-it-themselves/?utm_term=.209c151f74d8
 4 articles downloaded from washingtonpost_politics  using newspaper, url:  https://www.washingtonpost.com/nation/2018/10/23/three-miami-officers-accused-escorting-cocaine-traffickers-cash/?utm_term=.0406a3cdabfc
 2 articles downloaded from cnn_politics  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/the-forecast-democrats-gender-gap/index.html
-3 articles downloaded from cnn_politics  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/tax-cut-plan-congress-republicans/index.html
-4 articles downloaded from cnn_politics  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/andrew-gillum-texts-hamilton-corruption-investigation/index.html
+3 articles downloaded from cnn_politics  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/rahm-emanuel-donald-trump-2018-cnntv/index.html
+4 articles downloaded from cnn_politics  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/voting-2018-midterms-election-countdown/index.html
 1 articles downloaded from cnn_Bill Nelson  using newspaper, url:  https://www.sun-sentinel.com/news/florida/fl-fea-felonious-florida-season-2-premiere-20181001-story.html#nt=notification
 2 articles downloaded from cnn_Bill Nelson  using newspaper, url:  https://www.sun-sentinel.com/news/politics/fl-ne-andrew-gillum-bill-nelson-cnn-poll-20181022-story.html
 4 articles downloaded from cnn_Bill Nelson  using newspaper, url:  https://www.cnn.com/2018/10/21/politics/cnn-poll-florida-senate-governor/index.html
 2 articles downloaded from cnn_Rick Scott  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/the-forecast-democrats-gender-gap/index.html
-3 articles downloaded from cnn_Rick Scott  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/tax-cut-plan-congress-republicans/index.html
-4 articles downloaded from cnn_Rick Scott  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/andrew-gillum-texts-hamilton-corruption-investigation/index.html
+3 articles downloaded from cnn_Rick Scott  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/rahm-emanuel-donald-trump-2018-cnntv/index.html
+4 articles downloaded from cnn_Rick Scott  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/voting-2018-midterms-election-countdown/index.html
 2 articles downloaded from cnn_Dean Heller  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/the-forecast-democrats-gender-gap/index.html
-3 articles downloaded from cnn_Dean Heller  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/tax-cut-plan-congress-republicans/index.html
-4 articles downloaded from cnn_Dean Heller  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/andrew-gillum-texts-hamilton-corruption-investigation/index.html
+3 articles downloaded from cnn_Dean Heller  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/rahm-emanuel-donald-trump-2018-cnntv/index.html
+4 articles downloaded from cnn_Dean Heller  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/voting-2018-midterms-election-countdown/index.html
 2 articles downloaded from cnn_Jacky Rosen  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/the-forecast-democrats-gender-gap/index.html
-3 articles downloaded from cnn_Jacky Rosen  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/tax-cut-plan-congress-republicans/index.html
-4 articles downloaded from cnn_Jacky Rosen  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/andrew-gillum-texts-hamilton-corruption-investigation/index.html
+3 articles downloaded from cnn_Jacky Rosen  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/rahm-emanuel-donald-trump-2018-cnntv/index.html
+4 articles downloaded from cnn_Jacky Rosen  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/voting-2018-midterms-election-countdown/index.html
 2 articles downloaded from cnn_Claire McCaskill  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/the-forecast-democrats-gender-gap/index.html
-3 articles downloaded from cnn_Claire McCaskill  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/tax-cut-plan-congress-republicans/index.html
-4 articles downloaded from cnn_Claire McCaskill  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/andrew-gillum-texts-hamilton-corruption-investigation/index.html
+3 articles downloaded from cnn_Claire McCaskill  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/rahm-emanuel-donald-trump-2018-cnntv/index.html
+4 articles downloaded from cnn_Claire McCaskill  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/voting-2018-midterms-election-countdown/index.html
 2 articles downloaded from cnn_Josh Hawley  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/the-forecast-democrats-gender-gap/index.html
-3 articles downloaded from cnn_Josh Hawley  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/tax-cut-plan-congress-republicans/index.html
-4 articles downloaded from cnn_Josh Hawley  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/andrew-gillum-texts-hamilton-corruption-investigation/index.html
+3 articles downloaded from cnn_Josh Hawley  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/rahm-emanuel-donald-trump-2018-cnntv/index.html
+4 articles downloaded from cnn_Josh Hawley  using newspaper, url:  https://www.cnn.com/2018/10/23/politics/voting-2018-midterms-election-countdown/index.html
