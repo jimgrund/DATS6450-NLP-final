@@ -1,0 +1,32 @@
+{
+  "foxnews_politics": {
+    "link": "http://www.foxnews.com/politics"
+  },
+  "cnbc_politics": {
+    "link": "https://www.cnbc.com/politics/"
+  },
+  "washingtonpost_politics": {
+    "link": "https://www.washingtonpost.com/politics/"
+  },
+   "cnn_politics": {
+     "link": "https://www.cnn.com/politics"
+  },
+  	"cnn_Bill Nelson": {
+		"link": "https://www.sun-sentinel.com/news/politics/fl-ne-andrew-gillum-bill-nelson-cnn-poll-20181022-story.html"
+	},
+	"cnn_Rick Scott": {
+		"link": "https://www.cnn.com/2018/04/09/politics/rick-scott-bill-nelson-florida/index.html"
+	},
+    "cnn_Dean Heller": {
+         "link": "https://www.cnn.com/2017/07/19/politics/dean-heller-trump/index.html"
+  },
+    "cnn_Jacky Rosen": {
+        "link": "https://www.cnn.com/2018/10/06/politics/womens-vote-key-states/index.html"
+  },
+   "cnn_Claire McCaskill": {
+        "link": "https://www.cnn.com/2018/09/22/politics/islam-claire-mccaskill-radio-ad/index.html"
+  },
+   "cnn_Josh Hawley": {
+	  "link": "https://www.cnn.com/2018/10/01/politics/cnn-polls-missouri-nevada-senate/index.html"
+	}
+}
