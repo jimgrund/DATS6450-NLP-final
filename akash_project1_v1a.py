@@ -9,8 +9,8 @@ Created on Mon Oct 22 12:59:51 2018
 import os
 
 ### Provide the path here
-os.chdir('C:\\Users\\akash\\Desktop\\GWU\\6450_NLP_SKunath\\project_one') 
-#os.chdir("C:\\Users\\BBCETBB\\Documents\\gwu\\6450_NLP_SKunath\\project_one")
+#os.chdir('C:\\Users\\akash\\Desktop\\GWU\\6450_NLP_SKunath\\project_one') 
+os.chdir("C:\\Users\\BBCETBB\\Documents\\gwu\\6450_NLP_SKunath\\project_one")
                      
 # https://holwech.github.io/blog/Automatic-news-scraper/
 
@@ -137,6 +137,8 @@ for company, value in companies.items():
 try:
     with open('scraped_articles.json', 'w') as outfile:
         json.dump(data, outfile)
+    with open('scraped_articles.txt', 'w') as outfile:
+        json.dump(data,outfile)
 except Exception as e: print(e)
 
 print('test:',lineno())
