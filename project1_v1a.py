@@ -8,10 +8,14 @@ Created on Mon Oct 22 12:59:51 2018
 ## ENVIRONMENT PREP
 import os
 
-###
+################################################################################
 # Constants:
 # where to store data files
 data_directory = "data/"
+
+# Set the limit for number of articles to download
+LIMIT = 4
+################################################################################
 
 ### Provide the path here
 # Test if this is Akash path
@@ -26,24 +30,40 @@ if ( os.path.exists("/Users/jimgrund") ):
 
 
 import inspect
-def lineno():
-    """Returns the current line number in our program."""
-    return inspect.currentframe().f_back.f_lineno
-
 ### Basic Packages
-
 
 import feedparser as fp
 import json
+import re
 import newspaper
 from newspaper import Article
 from time import mktime
 from datetime import datetime
 
 ################################################################################
+# remove funkiness from string of text for use in filename
+def sanitize_string(text):
+    # Remove all non-word characters (everything except numbers and letters)
+    text = re.sub(r"[^\w\s]", '', text)
 
-# Set the limit for number of articles to download
-LIMIT = 4
+    # Replace all runs of whitespace with underscore
+    text = re.sub(r"\s+", '_', text)
+
+    return text
+
+
+################################################################################
+# construct filename for storing article locally on disk
+def article_filename(article_title,article_source):
+    article_title = sanitize_string(article_title)
+    filename = article_source + "--" + article_title + ".txt"
+    return(filename)
+
+
+################################################################################
+def lineno():
+    """Returns the current line number in our program."""
+    return inspect.currentframe().f_back.f_lineno
 
 ################################################################################
 
@@ -118,6 +138,7 @@ for company, value in companies.items():
             try:
                 content.download()
                 content.parse()
+                print(article_filename(content.title, company))
             except Exception as e:
                 print(e)
                 print("continuing...")
@@ -139,6 +160,11 @@ for company, value in companies.items():
             article['link'] = content.url
             article['published'] = content.publish_date.isoformat()
             newsPaper['articles'].append(article)
+            filehandle = open(data_directory + article_filename(content.title, company), 'w')
+            print(content.url, file=filehandle)
+            print(content.title, file=filehandle)
+            print(content.text, file=filehandle)
+            filehandle.close()
             print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
             print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
             count = count + 1
