@@ -9,7 +9,8 @@ Created on Mon Oct 22 12:59:51 2018
 import os
 
 ### Provide the path here
-os.chdir('C:\\Users\\akash\\Desktop\\GWU\\6450_NLP_SKunath\\project_one') 
+os.chdir('C:\\Users\\akash\\Documents\\GitHub\\DATS6450-NLP-final')
+#os.chdir('C:\\Users\\akash\\Desktop\\GWU\\6450_NLP_SKunath\\project_one') 
 #os.chdir("C:\\Users\\BBCETBB\\Documents\\gwu\\6450_NLP_SKunath\\project_one")
                      
 # https://holwech.github.io/blog/Automatic-news-scraper/
@@ -50,8 +51,15 @@ print('test:',lineno())
 
 ################################################################################
 
+#for every_articles:
+#    article_title = every_articles.title
+#    article_source = every_articles.source
+#    individual_article = join(article.source,"_",article_title,".txt")
+    
+    
+f = open(individual_article, 'w')
+
 count = 1
-f = open('summary_articles.txt', 'w')
 
 # Iterate through each news company
 for company, value in companies.items():
