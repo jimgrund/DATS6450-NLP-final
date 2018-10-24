@@ -5,27 +5,37 @@ Created on Mon Oct 22 12:59:51 2018
 
 @author: akash
 """
-## ENVIRONMENT PREP
-import os
 
-### Provide the path here
-os.chdir('C:\\Users\\akash\\Documents\\GitHub\\DATS6450-NLP-final')
-#os.chdir('C:\\Users\\akash\\Desktop\\GWU\\6450_NLP_SKunath\\project_one') 
-#os.chdir("C:\\Users\\BBCETBB\\Documents\\gwu\\6450_NLP_SKunath\\project_one")
-                     
 # https://holwech.github.io/blog/Automatic-news-scraper/
 
+################################################################################
 
+## ENVIRONMENT PREP
+import os
 import inspect
-def lineno():
-    """Returns the current line number in our program."""
-    return inspect.currentframe().f_back.f_lineno
+
+### Constants
+
+data_directory = "data/"                                                        # Where to store data files
+
+LIMIT = 8                                                                       # Set the limit for number of articles to download
+
+################################################################################
+
+### Provide the path here
+
+if ( os.path.exists("C:\\Users\\akash") ):                                      # Test if this is Akash path
+    os.chdir('C:\\Users\\akash\\Documents\\GitHub\\DATS6450-NLP-final') 
+if ( os.path.exists("C:\\Users\\BBCETBB") ):
+    os.chdir('C:\\Users\\BBCETBB\\Documents\\gwu\\6450_NLP_SKunath\\project_one')
+if ( os.path.exists("/Users/jimgrund") ):                                       # Test if this is Jim path
+    os.chdir('/Users/jimgrund/Documents/GWU/NLP/final/DATS6450-NLP-final/') 
 
 ### Basic Packages
 
-
 import feedparser as fp
 import json
+import re
 import newspaper
 from newspaper import Article
 from time import mktime
@@ -33,13 +43,30 @@ from datetime import datetime
 
 ################################################################################
 
-# Set the limit for number of articles to download
-LIMIT = 4
+
+### Sanitize Filename                                                   
+def sanitize_string(text):                                                      # Remove funkiness from string of text for use in filename
+    text = re.sub(r"[^\w\s]", '', text)                                         # Remove all non-word characters (everything except numbers and letters)
+    text = re.sub(r"\s+", '_', text)                                            # Replace all runs of whitespace with underscore
+    return text
 
 ################################################################################
 
-data = {}
-data['newspapers'] = {}
+def article_filename(article_title,article_source):                             # Construct filename for storing article locally on disk
+    article_title = sanitize_string(article_title)
+    filename = article_source + "--" + article_title + ".txt"
+    return(filename)
+
+################################################################################
+
+def lineno():                                                                   # Displays what line you are working on
+    """Returns the current line number in our program."""
+    return inspect.currentframe().f_back.f_lineno
+
+################################################################################
+
+data = {}                                                                       # Creates an empty array
+data['newspapers'] = {}                                                         # Creates an index for the empty array
 
 ################################################################################
 
@@ -50,35 +77,25 @@ with open('NewsPapers_v1a.json') as data_file:
 print('test:',lineno())
 
 ################################################################################
-
-#for every_articles:
-#    article_title = every_articles.title
-#    article_source = every_articles.source
-#    individual_article = join(article.source,"_",article_title,".txt")
     
-    
-f = open(individual_article, 'w')
 
-count = 1
+count = 1                                                                       # Starts the count of articles at 1, should end with the LIMIT set above
+
+f = open(data_directory + 'summary_articles.txt', 'w')                          # Creates and opens a blank text file
 
 # Iterate through each news company
 for company, value in companies.items():
-    # If a RSS link is provided in the JSON file, this will be the first choice.
-    # Reason for this is that, RSS feeds often give more consistent and correct data.
-    # If you do not want to scrape from the RSS-feed, just leave the RSS attr empty in the JSON file.
-    if 'rss' in value:
-        d = fp.parse(value['rss'])
-        print("Downloading articles from ", company)
+    if 'rss' in value:                                                          # If a RSS link is provided in the JSON file, this will be the first choice.
+        d = fp.parse(value['rss'])                                              # Reason for this is that, RSS feeds often give more consistent and correct data.
+        print("Downloading articles from ", company)                            # If you do not want to scrape from the RSS-feed, just leave the RSS attr empty in the JSON file.
         newsPaper = {
             "rss": value['rss'],
             "link": value['link'],
             "articles": []
         }
         for entry in d.entries:
-            # Check if publish date is provided, if no the article is skipped.
-            # This is done to keep consistency in the data and to keep the script from crashing.
-            if hasattr(entry, 'published'):
-                if count > LIMIT:
+            if hasattr(entry, 'published'):                                     # Check if publish date is provided, if no the article is skipped.
+                if count > LIMIT:                                               # This is done to keep consistency in the data and to keep the script from crashing.
                     break
                 article = {}
                 article['link'] = entry.link
@@ -88,9 +105,7 @@ for company, value in companies.items():
                     content = Article(entry.link)
                     content.download()
                     content.parse()
-                except Exception as e:
-                    # If the download for some reason fails (ex. 404) the script will continue downloading
-                    # the next article.
+                except Exception as e:                                          # If the download for some reason fails (ex. 404) the script will continue downloading the next article
                     print(e)
                     print("continuing...")
                     continue
@@ -100,10 +115,8 @@ for company, value in companies.items():
                 print(count, "articles downloaded from", company, ", url: ", entry.link)
                 print(count, "articles downloaded from", company, ", url: ", entry.link,file =f)
                 count = count + 1
-    else:
-        # This is the fallback method if a RSS-feed link is not provided.
-        # It uses the python newspaper library to extract articles
-        print("Building site for ", company)
+    else:                                                                       # This is the fallback method if a RSS-feed link is not provided
+        print("Building site for ", company)                                    # It uses the python newspaper library to extract articles
         paper = newspaper.build(value['link'], memoize_articles=False)
         newsPaper = {
             "link": value['link'],
@@ -116,13 +129,12 @@ for company, value in companies.items():
             try:
                 content.download()
                 content.parse()
+                print(article_filename(content.title, company))
             except Exception as e:
                 print(e)
                 print("continuing...")
-                continue
-            # Again, for consistency, if there is no found publish date the article will be skipped.
-            # After 10 downloaded articles from the same newspaper without publish date, the company will be skipped.
-            if content.publish_date is None:
+                continue                                                        # Again, for consistency, if there is no found publish date the article will be skipped.    
+            if content.publish_date is None:                                    # After 10 downloaded articles from the same newspaper without publish date, the company will be skipped.
                 print(count, " Article has date of type None...")
                 noneTypeCount = noneTypeCount + 1
                 if noneTypeCount > 10:
@@ -137,19 +149,27 @@ for company, value in companies.items():
             article['link'] = content.url
             article['published'] = content.publish_date.isoformat()
             newsPaper['articles'].append(article)
-            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
-            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
+            filehandle = open(data_directory + article_filename(content.title, company), 'w')
+            print(content.url, file=filehandle)
+            print(content.title, file=filehandle)
+            print(content.text, file=filehandle)
+            filehandle.close()
+            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url) # Prints out to console
+            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f) # Prints out to open file created earlier 
             count = count + 1
             noneTypeCount = 0
     count = 1
     data['newspapers'][company] = newsPaper
-f.close()                   
+f.close()                                                                       # Closes out of Summary_Articles.txt opened earlier
 
 # Finally it saves the articles as a JSON-file.
-try:
-    with open('scraped_articles.json', 'w') as outfile:
+try:                                                                            # If data_directory does not exist, create it
+    if not os.path.isdir(data_directory) and not os.path.exists(data_directory):
+        os.makedirs(data_directory)
+
+    with open(data_directory + 'scraped_articles.json', 'w') as outfile:
         json.dump(data, outfile)
-    with open('scraped_articles.txt', 'w') as outfile:
+    with open(data_directory + 'scraped_articles.txt', 'w') as outfile:
         json.dump(data,outfile)
 except Exception as e: print(e)
 
@@ -158,7 +178,7 @@ print('test:',lineno())
 ################################################################################
 
 # Input
-jsonTitle = "scraped_articles.json"
+jsonTitle = data_directory + "scraped_articles.json"
 
 # Solution
 ###
