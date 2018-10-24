@@ -8,33 +8,67 @@ Created on Mon Oct 22 12:59:51 2018
 ## ENVIRONMENT PREP
 import os
 
+################################################################################
+# Constants:
+# where to store data files
+data_directory = "data/"
+
+# Set the limit for number of articles to download
+LIMIT = 4
+################################################################################
+
 ### Provide the path here
+<<<<<<< HEAD
 os.chdir('C:\\Users\\akash\\Documents\\GitHub\\DATS6450-NLP-final')
 #os.chdir('C:\\Users\\akash\\Desktop\\GWU\\6450_NLP_SKunath\\project_one') 
+=======
+# Test if this is Akash path
+if ( os.path.exists("C:\\Users\\akash") ):
+    os.chdir('C:\\Users\\akash\\Desktop\\GWU\\6450_NLP_SKunath\\project_one') 
+# Test if this is Jim path
+if ( os.path.exists("/Users/jimgrund") ):
+    os.chdir('/Users/jimgrund/Documents/GWU/NLP/final/DATS6450-NLP-final/') 
+>>>>>>> jimgrund
 #os.chdir("C:\\Users\\BBCETBB\\Documents\\gwu\\6450_NLP_SKunath\\project_one")
                      
 # https://holwech.github.io/blog/Automatic-news-scraper/
 
 
 import inspect
-def lineno():
-    """Returns the current line number in our program."""
-    return inspect.currentframe().f_back.f_lineno
-
 ### Basic Packages
-
 
 import feedparser as fp
 import json
+import re
 import newspaper
 from newspaper import Article
 from time import mktime
 from datetime import datetime
 
 ################################################################################
+# remove funkiness from string of text for use in filename
+def sanitize_string(text):
+    # Remove all non-word characters (everything except numbers and letters)
+    text = re.sub(r"[^\w\s]", '', text)
 
-# Set the limit for number of articles to download
-LIMIT = 4
+    # Replace all runs of whitespace with underscore
+    text = re.sub(r"\s+", '_', text)
+
+    return text
+
+
+################################################################################
+# construct filename for storing article locally on disk
+def article_filename(article_title,article_source):
+    article_title = sanitize_string(article_title)
+    filename = article_source + "--" + article_title + ".txt"
+    return(filename)
+
+
+################################################################################
+def lineno():
+    """Returns the current line number in our program."""
+    return inspect.currentframe().f_back.f_lineno
 
 ################################################################################
 
@@ -60,6 +94,10 @@ print('test:',lineno())
 f = open(individual_article, 'w')
 
 count = 1
+<<<<<<< HEAD
+=======
+f = open(data_directory + 'summary_articles.txt', 'w')
+>>>>>>> jimgrund
 
 # Iterate through each news company
 for company, value in companies.items():
@@ -116,6 +154,7 @@ for company, value in companies.items():
             try:
                 content.download()
                 content.parse()
+                print(article_filename(content.title, company))
             except Exception as e:
                 print(e)
                 print("continuing...")
@@ -137,6 +176,11 @@ for company, value in companies.items():
             article['link'] = content.url
             article['published'] = content.publish_date.isoformat()
             newsPaper['articles'].append(article)
+            filehandle = open(data_directory + article_filename(content.title, company), 'w')
+            print(content.url, file=filehandle)
+            print(content.title, file=filehandle)
+            print(content.text, file=filehandle)
+            filehandle.close()
             print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
             print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
             count = count + 1
@@ -147,9 +191,13 @@ f.close()
 
 # Finally it saves the articles as a JSON-file.
 try:
-    with open('scraped_articles.json', 'w') as outfile:
+    # if data_directory does not exist, create it
+    if not os.path.isdir(data_directory) and not os.path.exists(data_directory):
+        os.makedirs(data_directory)
+
+    with open(data_directory + 'scraped_articles.json', 'w') as outfile:
         json.dump(data, outfile)
-    with open('scraped_articles.txt', 'w') as outfile:
+    with open(data_directory + 'scraped_articles.txt', 'w') as outfile:
         json.dump(data,outfile)
 except Exception as e: print(e)
 
@@ -158,7 +206,7 @@ print('test:',lineno())
 ################################################################################
 
 # Input
-jsonTitle = "scraped_articles.json"
+jsonTitle = data_directory + "scraped_articles.json"
 
 # Solution
 ###
