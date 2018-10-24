@@ -8,8 +8,18 @@ Created on Mon Oct 22 12:59:51 2018
 ## ENVIRONMENT PREP
 import os
 
+###
+# Constants:
+# where to store data files
+data_directory = "data/"
+
 ### Provide the path here
-os.chdir('C:\\Users\\akash\\Desktop\\GWU\\6450_NLP_SKunath\\project_one') 
+# Test if this is Akash path
+if ( os.path.exists("C:\\Users\\akash") ):
+    os.chdir('C:\\Users\\akash\\Desktop\\GWU\\6450_NLP_SKunath\\project_one') 
+# Test if this is Jim path
+if ( os.path.exists("/Users/jimgrund") ):
+    os.chdir('/Users/jimgrund/Documents/GWU/NLP/final/DATS6450-NLP-final/') 
 #os.chdir("C:\\Users\\BBCETBB\\Documents\\gwu\\6450_NLP_SKunath\\project_one")
                      
 # https://holwech.github.io/blog/Automatic-news-scraper/
@@ -51,7 +61,7 @@ print('test:',lineno())
 ################################################################################
 
 count = 1
-f = open('summary_articles.txt', 'w')
+f = open(data_directory + 'summary_articles.txt', 'w')
 
 # Iterate through each news company
 for company, value in companies.items():
@@ -139,9 +149,13 @@ f.close()
 
 # Finally it saves the articles as a JSON-file.
 try:
-    with open('scraped_articles.json', 'w') as outfile:
+    # if data_directory does not exist, create it
+    if not os.path.isdir(data_directory) and not os.path.exists(data_directory):
+        os.makedirs(data_directory)
+
+    with open(data_directory + 'scraped_articles.json', 'w') as outfile:
         json.dump(data, outfile)
-    with open('scraped_articles.txt', 'w') as outfile:
+    with open(data_directory + 'scraped_articles.txt', 'w') as outfile:
         json.dump(data,outfile)
 except Exception as e: print(e)
 
@@ -150,7 +164,7 @@ print('test:',lineno())
 ################################################################################
 
 # Input
-jsonTitle = "scraped_articles.json"
+jsonTitle = data_directory + "scraped_articles.json"
 
 # Solution
 ###
