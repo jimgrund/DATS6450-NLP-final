@@ -36,10 +36,15 @@ if ( os.path.exists("/Users/jimgrund") ):                                       
 import feedparser as fp
 import json
 import re
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import requests
+from bs4 import BeautifulSoup, SoupStrainer
 import newspaper
 from newspaper import Article
 from time import mktime
 from datetime import datetime
+import urllib.parse
 
 ################################################################################
 
@@ -62,6 +67,61 @@ def article_filename(article_title,article_source):                             
 def lineno():                                                                   # Displays what line you are working on
     """Returns the current line number in our program."""
     return inspect.currentframe().f_back.f_lineno
+
+################################################################################
+def read_article(article):
+    try:
+        content.download()
+        content.parse()
+        print(article_filename(content.title, company))
+    except Exception as e:
+        print(e)
+        print("continuing...")
+    article = {}
+    article['title'] = content.title
+    article['text'] = content.text
+    article['link'] = content.url
+    #article['published'] = content.publish_date.isoformat()
+    filehandle = open(data_directory + article_filename(content.title, company), 'w')
+    print(content.url, file=filehandle)
+    print(content.title, file=filehandle)
+    print(content.text, file=filehandle)
+    filehandle.close()
+    return(article)
+
+################################################################################
+def get_the_soup(source_link):
+    links = []
+    page = requests.get(source_link)
+    for link in BeautifulSoup(page.content, 'html.parser', parse_only=SoupStrainer('a')):
+        if link.has_attr('href'):
+            found_link = validate_and_correct_link(source_link,link['href'])
+            if ( found_link == '' ):
+                continue
+            links.append(found_link)
+    return(links)
+
+################################################################################
+def url_has_uri(link):
+    url = urllib.parse.urlparse(link)
+    if len(url.path) > 1:
+        return True
+    return False
+    
+################################################################################
+# take the link and if it's not a full/valid URL, then update to match the source info
+# ie: link = "/politics/florida_democrats_furious"
+#     source = "https://www.huffingtonpost.com/politics"
+#     update link with the "https://www.huffingtonpost.com/" parts from source
+def validate_and_correct_link(source,link):
+    url_source = urllib.parse.urlparse(source)
+    url_dest = urllib.parse.urlparse(link)
+    if len(url_dest.scheme) == 0 and len(url_dest.netloc) == 0:
+        return(url_source.scheme + '://' + url_source.netloc + '/' + link)
+    if url_source.scheme != url_dest.scheme or url_source.netloc != url_dest.netloc:
+        return('')
+    return(link)
+
 
 ################################################################################
 
@@ -122,6 +182,12 @@ for company, value in companies.items():
             "link": value['link'],
             "articles": []
         }
+#<<<<<<< jimgrund
+        if url_has_uri(value['link']):
+            article_links = get_the_soup(value['link'])
+            for article_link in article_links:
+                if count > LIMIT:
+#=======
         noneTypeCount = 0
         for content in paper.articles:
             if count > LIMIT:
@@ -140,8 +206,26 @@ for company, value in companies.items():
                 if noneTypeCount > 10:
                     print("Too many noneType dates, aborting...")
                     noneTypeCount = 0
+#>>>>>>> master
                     break
+                content = Article(article_link)
+                article = read_article(content)
+                newsPaper['articles'].append(article)
+                print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
+                print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
                 count = count + 1
+#<<<<<<< jimgrund
+        else:
+            for content in paper.articles:
+                if count > LIMIT:
+                    break
+                article = read_article(content)
+                newsPaper['articles'].append(article)
+                print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
+                print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
+                count = count + 1
+
+#=======
                 continue
             article = {}
             article['title'] = content.title
@@ -158,6 +242,7 @@ for company, value in companies.items():
             print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f) # Prints out to open file created earlier 
             count = count + 1
             noneTypeCount = 0
+#>>>>>>> master
     count = 1
     data['newspapers'][company] = newsPaper
 f.close()                                                                       # Closes out of Summary_Articles.txt opened earlier
