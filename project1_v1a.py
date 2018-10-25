@@ -66,6 +66,28 @@ def lineno():
     return inspect.currentframe().f_back.f_lineno
 
 ################################################################################
+def read_article(article):
+    try:
+        content.download()
+        content.parse()
+        print(article_filename(content.title, company))
+    except Exception as e:
+        print(e)
+        print("continuing...")
+        continue
+    article = {}
+    article['title'] = content.title
+    article['text'] = content.text
+    article['link'] = content.url
+    article['published'] = content.publish_date.isoformat()
+    newsPaper['articles'].append(article)
+    filehandle = open(data_directory + article_filename(content.title, company), 'w')
+    print(content.url, file=filehandle)
+    print(content.title, file=filehandle)
+    print(content.text, file=filehandle)
+    filehandle.close()
+
+################################################################################
 
 data = {}
 data['newspapers'] = {}
@@ -135,40 +157,12 @@ for company, value in companies.items():
         for content in paper.articles:
             if count > LIMIT:
                 break
-            try:
-                content.download()
-                content.parse()
-                print(article_filename(content.title, company))
-            except Exception as e:
-                print(e)
-                print("continuing...")
-                continue
-            # Again, for consistency, if there is no found publish date the article will be skipped.
-            # After 10 downloaded articles from the same newspaper without publish date, the company will be skipped.
-            if content.publish_date is None:
-                print(count, " Article has date of type None...")
-                noneTypeCount = noneTypeCount + 1
-                if noneTypeCount > 10:
-                    print("Too many noneType dates, aborting...")
-                    noneTypeCount = 0
-                    break
-                count = count + 1
-                continue
-            article = {}
-            article['title'] = content.title
-            article['text'] = content.text
-            article['link'] = content.url
-            article['published'] = content.publish_date.isoformat()
-            newsPaper['articles'].append(article)
-            filehandle = open(data_directory + article_filename(content.title, company), 'w')
-            print(content.url, file=filehandle)
-            print(content.title, file=filehandle)
-            print(content.text, file=filehandle)
-            filehandle.close()
+            read_article(content)
             print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
             print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
             count = count + 1
             noneTypeCount = 0
+
     count = 1
     data['newspapers'][company] = newsPaper
 f.close()                   
