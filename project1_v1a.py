@@ -35,10 +35,15 @@ import inspect
 import feedparser as fp
 import json
 import re
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import requests
+from bs4 import BeautifulSoup, SoupStrainer
 import newspaper
 from newspaper import Article
 from time import mktime
 from datetime import datetime
+import urllib.parse
 
 ################################################################################
 # remove funkiness from string of text for use in filename
@@ -74,18 +79,51 @@ def read_article(article):
     except Exception as e:
         print(e)
         print("continuing...")
-        continue
     article = {}
     article['title'] = content.title
     article['text'] = content.text
     article['link'] = content.url
-    article['published'] = content.publish_date.isoformat()
-    newsPaper['articles'].append(article)
+    #article['published'] = content.publish_date.isoformat()
     filehandle = open(data_directory + article_filename(content.title, company), 'w')
     print(content.url, file=filehandle)
     print(content.title, file=filehandle)
     print(content.text, file=filehandle)
     filehandle.close()
+    return(article)
+
+################################################################################
+def get_the_soup(source_link):
+    links = []
+    page = requests.get(source_link)
+    for link in BeautifulSoup(page.content, 'html.parser', parse_only=SoupStrainer('a')):
+        if link.has_attr('href'):
+            found_link = validate_and_correct_link(source_link,link['href'])
+            if ( found_link == '' ):
+                continue
+            links.append(found_link)
+    return(links)
+
+################################################################################
+def url_has_uri(link):
+    url = urllib.parse.urlparse(link)
+    if len(url.path) > 1:
+        return True
+    return False
+    
+################################################################################
+# take the link and if it's not a full/valid URL, then update to match the source info
+# ie: link = "/politics/florida_democrats_furious"
+#     source = "https://www.huffingtonpost.com/politics"
+#     update link with the "https://www.huffingtonpost.com/" parts from source
+def validate_and_correct_link(source,link):
+    url_source = urllib.parse.urlparse(source)
+    url_dest = urllib.parse.urlparse(link)
+    if len(url_dest.scheme) == 0 and len(url_dest.netloc) == 0:
+        return(url_source.scheme + '://' + url_source.netloc + '/' + link)
+    if url_source.scheme != url_dest.scheme or url_source.netloc != url_dest.netloc:
+        return('')
+    return(link)
+
 
 ################################################################################
 
@@ -153,15 +191,26 @@ for company, value in companies.items():
             "link": value['link'],
             "articles": []
         }
-        noneTypeCount = 0
-        for content in paper.articles:
-            if count > LIMIT:
-                break
-            read_article(content)
-            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
-            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
-            count = count + 1
-            noneTypeCount = 0
+        if url_has_uri(value['link']):
+            article_links = get_the_soup(value['link'])
+            for article_link in article_links:
+                if count > LIMIT:
+                    break
+                content = Article(article_link)
+                article = read_article(content)
+                newsPaper['articles'].append(article)
+                print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
+                print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
+                count = count + 1
+        else:
+            for content in paper.articles:
+                if count > LIMIT:
+                    break
+                article = read_article(content)
+                newsPaper['articles'].append(article)
+                print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
+                print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
+                count = count + 1
 
     count = 1
     data['newspapers'][company] = newsPaper
