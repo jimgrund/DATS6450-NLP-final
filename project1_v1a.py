@@ -14,7 +14,7 @@ import os
 data_directory = "data/"
 
 # Set the limit for number of articles to download
-LIMIT = 4
+LIMIT = 8
 ################################################################################
 
 ### Provide the path here
@@ -24,7 +24,6 @@ if ( os.path.exists("C:\\Users\\akash") ):
 # Test if this is Jim path
 if ( os.path.exists("/Users/jimgrund") ):
     os.chdir('/Users/jimgrund/Documents/GWU/NLP/final/DATS6450-NLP-final/')
-#os.chdir("C:\\Users\\BBCETBB\\Documents\\gwu\\6450_NLP_SKunath\\project_one")
 
 # https://holwech.github.io/blog/Automatic-news-scraper/
 
@@ -145,72 +144,33 @@ f = open(data_directory + 'summary_articles.txt', 'w')
 
 # Iterate through each news company
 for company, value in companies.items():
-    # If a RSS link is provided in the JSON file, this will be the first choice.
-    # Reason for this is that, RSS feeds often give more consistent and correct data.
-    # If you do not want to scrape from the RSS-feed, just leave the RSS attr empty in the JSON file.
-    if 'rss' in value:
-        d = fp.parse(value['rss'])
-        print("Downloading articles from ", company)
-        newsPaper = {
-            "rss": value['rss'],
-            "link": value['link'],
-            "articles": []
-        }
-        for entry in d.entries:
-            # Check if publish date is provided, if no the article is skipped.
-            # This is done to keep consistency in the data and to keep the script from crashing.
-            if hasattr(entry, 'published'):
-                if count > LIMIT:
-                    break
-                article = {}
-                article['link'] = entry.link
-                date = entry.published_parsed
-                article['published'] = datetime.fromtimestamp(mktime(date)).isoformat()
-                try:
-                    content = Article(entry.link)
-                    content.download()
-                    content.parse()
-                except Exception as e:
-                    # If the download for some reason fails (ex. 404) the script will continue downloading
-                    # the next article.
-                    print(e)
-                    print("continuing...")
-                    continue
-                article['title'] = content.title
-                article['text'] = content.text
-                newsPaper['articles'].append(article)
-                print(count, "articles downloaded from", company, ", url: ", entry.link)
-                print(count, "articles downloaded from", company, ", url: ", entry.link,file =f)
-                count = count + 1
+
+    print("Building site for ", company)
+    paper = newspaper.build(value['link'], memoize_articles=False)
+    newsPaper = {
+        "link": value['link'],
+        "articles": []
+    }
+    if url_has_uri(value['link']):
+        article_links = get_the_soup(value['link'])
+        for article_link in article_links:
+            if count > LIMIT:
+                break
+            content = Article(article_link)
+            article = read_article(content)
+            newsPaper['articles'].append(article)
+            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
+            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
+            count = count + 1
     else:
-        # This is the fallback method if a RSS-feed link is not provided.
-        # It uses the python newspaper library to extract articles
-        print("Building site for ", company)
-        paper = newspaper.build(value['link'], memoize_articles=False)
-        newsPaper = {
-            "link": value['link'],
-            "articles": []
-        }
-        if url_has_uri(value['link']):
-            article_links = get_the_soup(value['link'])
-            for article_link in article_links:
-                if count > LIMIT:
-                    break
-                content = Article(article_link)
-                article = read_article(content)
-                newsPaper['articles'].append(article)
-                print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
-                print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
-                count = count + 1
-        else:
-            for content in paper.articles:
-                if count > LIMIT:
-                    break
-                article = read_article(content)
-                newsPaper['articles'].append(article)
-                print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
-                print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
-                count = count + 1
+        for content in paper.articles:
+            if count > LIMIT:
+                break
+            article = read_article(content)
+            newsPaper['articles'].append(article)
+            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
+            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
+            count = count + 1
 
     count = 1
     data['newspapers'][company] = newsPaper
@@ -252,3 +212,4 @@ print("\n pyDict","(",jsonTitle,"):","\n")
 print('test:',lineno())
 
 ################################################################################
+
