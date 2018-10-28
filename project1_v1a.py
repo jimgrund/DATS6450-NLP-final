@@ -15,6 +15,9 @@ data_directory = "data/"
 
 # Set the limit for number of articles to download
 LIMIT = 8
+
+# candidates
+candidates_list = ['nelson','scott','heller','rosen','mccaskill','hawley']
 ################################################################################
 
 ### Provide the path here
@@ -23,7 +26,7 @@ if ( os.path.exists("C:\\Users\\akash") ):
     os.chdir('C:\\Users\\akash\\Desktop\\GWU\\6450_NLP_SKunath\\project_one')
 # Test if this is Jim path
 if ( os.path.exists("/Users/jimgrund") ):
-    os.chdir('/Users/jimgrund/Documents/GWU/NLP/final/DATS6450-NLP-final/')
+    os.chdir('/Users/jimgrund/Documents/GWU/NLP/final/test/DATS6450-NLP-final/')
 
 # https://holwech.github.io/blog/Automatic-news-scraper/
 
@@ -74,10 +77,21 @@ def read_article(article):
     try:
         content.download()
         content.parse()
+        content.nlp()
+        # print("######################")
+        # print("Keywords:")
+        content_keywords = content.keywords
+        if len(set(content_keywords) & set(candidates_list)) == 0:
+            # print("content_keywords has no match for anyone in candidates_list")
+            return(None)
+        # print(content.keywords)
+        # print(content.summary)
+        # print("######################")
         print(article_filename(content.title, company))
     except Exception as e:
         print(e)
         print("continuing...")
+        return(None)
     article = {}
     article['title'] = content.title
     article['text'] = content.text
@@ -158,6 +172,9 @@ for company, value in companies.items():
                 break
             content = Article(article_link)
             article = read_article(content)
+            if (article == None):
+                # print("article skip")
+                continue
             newsPaper['articles'].append(article)
             print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
             print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
