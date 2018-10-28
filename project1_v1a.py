@@ -26,7 +26,7 @@ if ( os.path.exists("C:\\Users\\akash") ):
     os.chdir('C:\\Users\\akash\\Desktop\\GWU\\6450_NLP_SKunath\\project_one')
 # Test if this is Jim path
 if ( os.path.exists("/Users/jimgrund") ):
-    os.chdir('/Users/jimgrund/Documents/GWU/NLP/final/test/DATS6450-NLP-final/')
+    os.chdir('/Users/jimgrund/Documents/GWU/NLP/final/test2/DATS6450-NLP-final/')
 
 # https://holwech.github.io/blog/Automatic-news-scraper/
 
@@ -34,6 +34,7 @@ if ( os.path.exists("/Users/jimgrund") ):
 import inspect
 ### Basic Packages
 
+import multiprocessing as mp
 import feedparser as fp
 import json
 import re
@@ -73,7 +74,7 @@ def lineno():
     return inspect.currentframe().f_back.f_lineno
 
 ################################################################################
-def read_article(article):
+def read_article(content, company):
     try:
         content.download()
         content.parse()
@@ -139,6 +140,49 @@ def validate_and_correct_link(source,link):
 
 
 ################################################################################
+def get_articles_for_company(company,value):
+    print("Building site for ", company)
+
+    # initialize counter for tracking number of articles per company
+    count = 1
+
+    paper = newspaper.build(value['link'], memoize_articles=False)
+    newsPaper = {
+        "link": value['link'],
+        "articles": []
+    }
+    f = open(data_directory + 'summary_articles-' + company + '.txt', 'w')
+    print("Checking link: ", value['link'])
+    if url_has_uri(value['link']):
+        article_links = get_the_soup(value['link'])
+        for article_link in article_links:
+            if count > LIMIT:
+                break
+            content = Article(article_link)
+            article = read_article(content, company)
+            if (article == None):
+                # print("article skip")
+                continue
+            newsPaper['articles'].append(article)
+            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
+            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
+            count = count + 1
+    else:
+        for content in paper.articles:
+            if count > LIMIT:
+                break
+            article = read_article(content, company)
+            newsPaper['articles'].append(article)
+            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
+            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
+            count = count + 1
+
+    count = 1
+    data['newspapers'][company] = newsPaper
+    f.close()
+    return data
+
+################################################################################
 
 data = {}
 data['newspapers'] = {}
@@ -153,45 +197,14 @@ print('test:',lineno())
 
 ################################################################################
 
-count = 1
-f = open(data_directory + 'summary_articles.txt', 'w')
+#f = open(data_directory + 'summary_articles.txt', 'w')
 
-# Iterate through each news company
-for company, value in companies.items():
+# Paralellize for each news company
+pool = mp.Pool(processes=6)
+results = [pool.apply_async(get_articles_for_company, args=(company,value)) for company, value in companies.items()]
+output = [p.get() for p in results]
 
-    print("Building site for ", company)
-    paper = newspaper.build(value['link'], memoize_articles=False)
-    newsPaper = {
-        "link": value['link'],
-        "articles": []
-    }
-    if url_has_uri(value['link']):
-        article_links = get_the_soup(value['link'])
-        for article_link in article_links:
-            if count > LIMIT:
-                break
-            content = Article(article_link)
-            article = read_article(content)
-            if (article == None):
-                # print("article skip")
-                continue
-            newsPaper['articles'].append(article)
-            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
-            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
-            count = count + 1
-    else:
-        for content in paper.articles:
-            if count > LIMIT:
-                break
-            article = read_article(content)
-            newsPaper['articles'].append(article)
-            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url)
-            print(count, "articles downloaded from", company, " using newspaper, url: ", content.url, file=f)
-            count = count + 1
-
-    count = 1
-    data['newspapers'][company] = newsPaper
-f.close()
+data = output
 
 # Finally it saves the articles as a JSON-file.
 try:
