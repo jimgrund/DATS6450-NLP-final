@@ -1,10 +1,40 @@
 {
   "florida_today_politics": {
     "link": "https://www.floridatoday.com/section/global/elections" },
+
+  "tampabay_politics": {
+    "link": "https://www.tampabay.com/florida-politics/" },
+
+  "sun_sentinel_politics": {
+    "link": "https://www.sun-sentinel.com/news/politics/" },
 	
   "nevada_indep_elections": {
     "link": "https://thenevadaindependent.com/election/2018/governor" },
 	
+  "lasvegas_now_elections": {
+    "link": "https://www.lasvegasnow.com/your-local-election-headquarters" },
+
+  "lasvegas_now_politics": {
+    "link": "https://www.lasvegasnow.com/news/politics" },
+
+  "lasvegas_sun_politics": {
+    "link": "https://lasvegassun.com/news/politics/" },
+
+  "reno_election": {
+    "link": "https://foxreno.com/news/election" },
+
+  "stlouis_politics": {
+    "link": "https://www.stltoday.com/news/local/govt-and-politics/" },
+
+  "kansas_city_politics": {
+    "link": "https://www.kansascity.com/news/politics-government/" },
+
+  "kansas_city_politics": {
+    "link": "https://www.kansascity.com/news/politics-government/election/" },
+
+  "vox_politics": {
+    "link": "https://www.vox.com/policy-and-politics" },
+
   "foxnews_politics": {
     "link": "http://www.foxnews.com/politics" },
 	

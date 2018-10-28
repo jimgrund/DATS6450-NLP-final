@@ -16,6 +16,10 @@ data_directory = "data/"
 # Set the limit for number of articles to download
 LIMIT = 8
 
+# Set the maximum number of processes that can run simultaneous
+# this should be less than the number of CPU Cores 
+MAXPROCESSES = 4
+
 # candidates
 candidates_list = ['nelson','scott','heller','rosen','mccaskill','hawley']
 ################################################################################
@@ -132,8 +136,18 @@ def url_has_uri(link):
 def validate_and_correct_link(source,link):
     url_source = urllib.parse.urlparse(source)
     url_dest = urllib.parse.urlparse(link)
+
+    # only insert a slash into the url if it's needed
+    slash = '/'
+    # does the uri/link begin with a slash, if so we don't need to inject one
+    if len(link) > 0 and link[0] == '/':
+        slash = ''
+    # does the netloc end with a slash, if so we don't need to inject one
+    if url_source.netloc[len(url_source.netloc)-1] == '/':
+        slash = ''
+
     if len(url_dest.scheme) == 0 and len(url_dest.netloc) == 0:
-        return(url_source.scheme + '://' + url_source.netloc + '/' + link)
+        return(url_source.scheme + '://' + url_source.netloc + slash + link)
     if url_source.scheme != url_dest.scheme or url_source.netloc != url_dest.netloc:
         return('')
     return(link)
@@ -200,7 +214,7 @@ print('test:',lineno())
 #f = open(data_directory + 'summary_articles.txt', 'w')
 
 # Paralellize for each news company
-pool = mp.Pool(processes=6)
+pool = mp.Pool(processes=MAXPROCESSES)
 results = [pool.apply_async(get_articles_for_company, args=(company,value)) for company, value in companies.items()]
 output = [p.get() for p in results]
 
