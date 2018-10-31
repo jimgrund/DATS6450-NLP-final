@@ -14,7 +14,7 @@ import os
 data_directory = "data/"
 
 # Set the limit for number of articles to download
-LIMIT = 8
+LIMIT = 30
 
 # Set the maximum number of processes that can run simultaneous
 # this should be less than the number of CPU Cores 
@@ -172,7 +172,7 @@ def get_articles_for_company(company,value):
         for article_link in article_links:
             if count > LIMIT:
                 break
-            content = Article(article_link)
+            content = Article(article_link, request_timeout=30, fetch_images=False, MAX_KEYWORDS=100, MAX_TEXT=300000)
             article = read_article(content, company)
             if (article == None):
                 # print("article skip")
