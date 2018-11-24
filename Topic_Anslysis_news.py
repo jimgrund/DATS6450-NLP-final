@@ -87,6 +87,21 @@ def get_names(text):
     return person_list
 
 
+def compute_afinn_score(text):
+    afinn = Afinn(emoticons=True)
+
+    #compute sentiment scores (polarity) and labels
+    sentiment_score     = [afinn.score(text)]
+    sentiment_category  = ['positive' if score > 0
+                           else 'negative' if score < 0
+                           else 'neutral'
+                           for score in sentiment_score]
+
+    #print(sentiment_score)
+    #print(sentiment_category)
+    return(sentiment_score, sentiment_category)
+
+
 def process_text(source,text):
     article_df = pd.DataFrame(columns=['source','candidates','topics'])      # initialize dataframe for each article
     #person_names=person_list
@@ -100,6 +115,9 @@ def process_text(source,text):
     topics = get_topics(text)
     article_df['topics'] = [topics]
     article_df['source'] = source
+    (sentiment_score, sentiment_category) = compute_afinn_score(text)
+    article_df['sentiment_score'] = sentiment_score
+    article_df['sentiment_category'] = sentiment_category
     return article_df
 
 
