@@ -12,7 +12,8 @@ from nltk.stem import WordNetLemmatizer, SnowballStemmer
 from nltk.stem.porter import PorterStemmer
 from gensim import corpora, models
 import numpy as np
-
+from afinn import Afinn
+afinn = Afinn()
 np.random.seed(2018)
 
 nltk.download('wordnet')
