@@ -136,7 +136,7 @@ for file in newsfiles:
 
 twitter_file = twitterpath + '/NLP_Proj_Final_Twitter_Data.xlsx'
 twitter_data_df = pd.read_excel(twitter_file)
-twitter_data_df = twitter_data_df[['Id','tweet']].head()
+twitter_data_df = twitter_data_df[['Id','tweet']].drop_duplicates(subset=['tweet'])
 for id,tweet in twitter_data_df.itertuples(index=False):
     results_df = results_df.append(process_text(str(id),tweet),ignore_index=True)
 
