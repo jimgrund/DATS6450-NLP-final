@@ -57,7 +57,9 @@ def get_topics(text):
     # LDA Model using Bag of Words
     lda_model = gensim.models.LdaMulticore(bow_corpus, num_topics=15, id2word=dictionary, passes=2, workers=4)
 
-    return(lda_model.show_topics(num_topics=1, num_words=15, log=False, formatted=False))
+    topic_score_list = lda_model.show_topics(num_topics=1, num_words=15, log=False, formatted=False)[0][1]
+    topics_list = [topic[0] for topic in topic_score_list]
+    return(topics_list)
 
 
 
@@ -95,7 +97,7 @@ for file in newsfiles:
    person_names=person_list
 
    filepath = newspath + "/" + file
-   data = open(filepath,'r')
+   data = open(filepath,'r',encoding='utf-8')
 
    new_data = data.read()
    get_names(new_data)
