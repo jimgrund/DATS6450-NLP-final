@@ -19,6 +19,7 @@ nltk.download('wordnet')
 
 
 newspath = os.path.join(os.getcwd(), 'data', 'news-data')
+twitterpath = os.path.join(os.getcwd(), 'data')
 
 candidates_list = ['bill nelson','rick scott','dean heller','jacky rosen','claire mccaskill','josh hawley']
 
@@ -60,6 +61,7 @@ def get_topics(text):
     topic_score_list = lda_model.show_topics(num_topics=1, num_words=15, log=False, formatted=False)[0][1]
     topics_list = [topic[0] for topic in topic_score_list]
     return(topics_list)
+    #return(lda_model.show_topics(num_topics=1, num_words=15, log=False, formatted=False)[0][1])
 
 
 
@@ -69,6 +71,7 @@ def get_names(text):
     sentt = nltk.ne_chunk(pos, binary = False)
 
     person = []
+    person_list = []
     name = ""
     for subtree in sentt.subtrees(filter=lambda t: t.label() == 'PERSON'):   # only look for entity type of person
         for leaf in subtree.leaves():
@@ -81,8 +84,23 @@ def get_names(text):
                     person_list.append(name[:-1])
             name = ''
         person = []
+    return person_list
 
 
+def process_text(source,text):
+    article_df = pd.DataFrame(columns=['source','candidates','topics'])      # initialize dataframe for each article
+    #person_names=person_list
+
+    #article_df['a'] = None
+
+    person_names = get_names(text)
+    #article_df['source'] = pd.Series(dtype='str')
+    #article_df['source'] = source
+    article_df['candidates'] = [person_names]
+    topics = get_topics(text)
+    article_df['topics'] = [topics]
+    article_df['source'] = source
+    return article_df
 
 
 
@@ -92,24 +110,19 @@ results_df = pd.DataFrame()
 newsfiles = [f for f in listdir(newspath) if isfile(join(newspath, f))]
 
 for file in newsfiles:
-   article_df = pd.DataFrame(columns=['file','candidates','topics'])      # initialize dataframe for each article
-   person_list = []
-   person_names=person_list
-
    filepath = newspath + "/" + file
    data = open(filepath,'r',encoding='utf-8')
+   text = data.read()
+   results_df = results_df.append(process_text(file,text))
 
-   new_data = data.read()
-   get_names(new_data)
-   article_df['file'] = pd.Series(dtype='str')
-   article_df['file'] = file
-   article_df['candidates'] = [person_names]
-   topics = get_topics(new_data)
-   article_df['topics'] = [topics]
-   results_df = results_df.append(article_df)
-
+twitter_file = twitterpath + '/NLP_Proj_Final_Twitter_Data.xlsx'
+twitter_data_df = pd.read_excel(twitter_file)
+twitter_data_df = twitter_data_df[['Id','tweet']].head()
+for id,tweet in twitter_data_df.itertuples(index=False):
+    results_df = results_df.append(process_text(str(id),tweet),ignore_index=True)
 
 
-results_df['file'] = results_df['file'].astype(str)
+
+results_df['source'] = results_df['source'].astype(str)
 print(results_df)
 exit()
