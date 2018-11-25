@@ -144,4 +144,9 @@ for id,tweet in twitter_data_df.itertuples(index=False):
 
 results_df['source'] = results_df['source'].astype(str)
 print(results_df)
+
+writer = pd.ExcelWriter('results.xlsx')
+results_df.to_excel(writer,'results')
+writer.save()
+
 exit()
