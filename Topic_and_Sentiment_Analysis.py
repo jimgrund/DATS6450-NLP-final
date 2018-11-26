@@ -14,6 +14,7 @@ from gensim import corpora, models
 import numpy as np
 from afinn import Afinn
 afinn = Afinn()
+
 np.random.seed(2018)
 
 nltk.download('wordnet')
@@ -23,7 +24,11 @@ newspath = os.path.join(os.getcwd(), 'data', 'news-data')
 twitterpath = os.path.join(os.getcwd(), 'data')
 
 candidates_list = ['bill nelson','rick scott','dean heller','jacky rosen','claire mccaskill','josh hawley']
+twitter_accounts = ['Nelson','Scott','Heller','Rosen','McCaskill','Hawley']
 
+
+def map_twitter_account(account):
+    return candidates_list[twitter_accounts.index(account)]
 
 
 def get_topics(text):
@@ -103,22 +108,30 @@ def compute_afinn_score(text):
     return(sentiment_score, sentiment_category)
 
 
-def process_text(source,text):
-    article_df = pd.DataFrame(columns=['source','candidates','topics'])      # initialize dataframe for each article
+
+def process_text(source_type,source,text,twitter_account=''):
+    article_df = pd.DataFrame(columns=['source','candidates','topics','fulltext'])      # initialize dataframe for each article
     #person_names=person_list
 
     #article_df['a'] = None
 
-    person_names = get_names(text)
-    #article_df['source'] = pd.Series(dtype='str')
-    #article_df['source'] = source
-    article_df['candidates'] = [person_names]
-    topics = get_topics(text)
-    article_df['topics'] = [topics]
-    article_df['source'] = source
+    person_names                          = get_names(text)
+
+    if len(twitter_account) > 0:
+       twitter_candidate = map_twitter_account(twitter_account)
+       if twitter_candidate not in person_names:
+           person_names.append(twitter_candidate)
+    #article_df['source']                 = pd.Series(dtype='str')
+    #article_df['source']                 = source
+    article_df['candidates']              = [person_names]
+    topics                                = get_topics(text)
+    article_df['topics']                  = [topics]
+    article_df['source']                  = source
+    article_df['source_type']             = source_type
     (sentiment_score, sentiment_category) = compute_afinn_score(text)
-    article_df['sentiment_score'] = sentiment_score
-    article_df['sentiment_category'] = sentiment_category
+    article_df['sentiment_score']         = sentiment_score
+    article_df['sentiment_category']      = sentiment_category
+    article_df['fulltext']                = text
     return article_df
 
 
@@ -132,21 +145,23 @@ for file in newsfiles:
    filepath = newspath + "/" + file
    data = open(filepath,'r',encoding='utf-8')
    text = data.read()
-   results_df = results_df.append(process_text(file,text))
+   results_df = results_df.append(process_text('news',file,text))
+
 
 twitter_file = twitterpath + '/NLP_Proj_Final_Twitter_Data.xlsx'
 twitter_data_df = pd.read_excel(twitter_file)
-twitter_data_df = twitter_data_df[['Id','tweet']].drop_duplicates(subset=['tweet'])
-for id,tweet in twitter_data_df.itertuples(index=False):
-    results_df = results_df.append(process_text(str(id),tweet),ignore_index=True)
+print(twitter_data_df.shape)
+twitter_data_df = twitter_data_df[['Id','tweet','Account']].drop_duplicates(subset=['tweet'])
+print(twitter_data_df.shape)
+for id,tweet,account in twitter_data_df.itertuples(index=False):
+    results_df = results_df.append(process_text('twitter',str(id),tweet,account),ignore_index=True)
 
 
 
 results_df['source'] = results_df['source'].astype(str)
 print(results_df)
 
-writer = pd.ExcelWriter('results.xlsx')
+writer = pd.ExcelWriter('results2.xlsx')
 results_df.to_excel(writer,'results')
 writer.save()
-
 exit()
